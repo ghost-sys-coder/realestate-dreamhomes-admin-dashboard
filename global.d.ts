@@ -1,5 +1,6 @@
 declare module "*.css"
 
+
 interface TablePropertyCard {
     id: string;
     title: string;
@@ -62,3 +63,4 @@ interface PropertyProps {
         [key: string]: string | number | boolean | null;
     }
 }
+

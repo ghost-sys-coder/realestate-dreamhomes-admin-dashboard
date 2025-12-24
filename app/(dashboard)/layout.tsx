@@ -1,12 +1,15 @@
 import React from 'react'
+import { redirect } from 'next/navigation'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import AppSidebar from '@/components/dashboard/AppSidebar'
 import { UserButton } from '@clerk/nextjs'
-
 import { currentUser } from '@clerk/nextjs/server'
+import { eq } from 'drizzle-orm'
+
 import { db } from '@/db/drizzle'
 import { usersTable } from '@/db/schema'
-import { eq } from 'drizzle-orm'
+import { checkRole } from '@/utils/roles'
+
 
 
 const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
@@ -26,6 +29,12 @@ const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
         role: "client"
       })
     }
+  }
+
+  const isAdmin = await checkRole("admin");
+
+  if (!isAdmin) {
+    redirect("/")
   }
 
   return (

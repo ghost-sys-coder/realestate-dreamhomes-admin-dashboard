@@ -1,3 +1,4 @@
+"use client";
 import React from 'react'
 
 import {
@@ -19,7 +20,10 @@ import {
     CardTitle,
 } from "@/components/ui/card"
 import { Button } from '@/components/ui/button'
-import { Edit, Plus, Trash2 } from 'lucide-react'
+import { Edit } from 'lucide-react'
+import AddLocationDialog from './AddLocationDialog'
+import DeleteButton from './DeleteButton'
+import { deleteLocation } from '@/actions/locations'
 
 interface CitiesTableProps {
     allLocations: {
@@ -30,16 +34,14 @@ interface CitiesTableProps {
     }[];
 }
 
-const CitiesTable = async ({ allLocations }: CitiesTableProps) => {
+const CitiesTable = ({ allLocations }: CitiesTableProps) => {
     
     return (
         <Card>
             <CardHeader>
                 <div className="flex justify-between items-center gap-2">
                     <CardTitle>Cities / Neighbourhood</CardTitle>
-                    <Button size="sm">
-                        <Plus className='mr-2 h-4 w-4' /> Add Region
-                    </Button>
+                    <AddLocationDialog />
                 </div>
                 <CardDescription>Neighbourhoods, suburbs, and towns used in property listings</CardDescription>
             </CardHeader>
@@ -64,9 +66,12 @@ const CitiesTable = async ({ allLocations }: CitiesTableProps) => {
                                     <Button size="icon" variant={"ghost"} className='bg-green-400 text-white cursor-pointer'>
                                         <Edit className='h-4 w-4' />
                                     </Button>
-                                    <Button size="icon" variant={"ghost"} className='bg-red-400 text-white cursor-pointer'>
-                                        <Trash2 className='h-4 w-4' />
-                                    </Button>
+                                    <DeleteButton
+                                        id={location.id}
+                                        itemName={location.name}
+                                        itemType="location"
+                                        onDelete={() => deleteLocation(location.id)}
+                                    />
                                 </TableCell>
                             </TableRow>
                         ))}

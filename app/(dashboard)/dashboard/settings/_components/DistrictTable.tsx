@@ -1,3 +1,6 @@
+
+"use client";
+
 import React from 'react'
 
 import {
@@ -20,7 +23,10 @@ import {
     CardTitle,
 } from "@/components/ui/card"
 import { Button } from '@/components/ui/button'
-import { Edit, Plus, Trash2 } from 'lucide-react'
+import { Edit } from 'lucide-react'
+import AddDistrictDialog from './AddDistrictDialog'
+import DeleteButton from './DeleteButton'
+import { deleteDistrict } from '@/actions/locations'
 
 interface DistrictTableProps {
     allDistricts: {
@@ -30,16 +36,14 @@ interface DistrictTableProps {
     }[];
 }
 
-const DistrictTable = async ({allDistricts}: DistrictTableProps) => {
+const DistrictTable = ({allDistricts}: DistrictTableProps) => {
     
   return (
       <Card>
           <CardHeader>
               <div className="flex justify-between items-center gap-2">
                   <CardTitle>Districts</CardTitle>
-                  <Button size={"sm"}>
-                      <Plus className='mr-2 h-4 w-4' /> Add District
-                  </Button>
+                  <AddDistrictDialog />
               </div>
               <CardDescription>Districts grouped by regions</CardDescription>
           </CardHeader>
@@ -62,9 +66,12 @@ const DistrictTable = async ({allDistricts}: DistrictTableProps) => {
                                     <Button size="icon" variant={"ghost"} className='bg-green-400 text-white cursor-pointer'>
                                         <Edit className='h-4 w-4' />
                                     </Button>
-                                    <Button size="icon" variant={"ghost"} className='bg-red-400 text-white cursor-pointer'>
-                                        <Trash2 className='h-4 w-4' />
-                                    </Button>
+                                  <DeleteButton
+                                      id={district.id}
+                                      itemName={district.name}
+                                      itemType="district"
+                                      onDelete={() => deleteDistrict(district.id)}
+                                  />
                                 </TableCell>
                           </TableRow>
                       ))}

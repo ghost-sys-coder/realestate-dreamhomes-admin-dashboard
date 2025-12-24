@@ -1,15 +1,16 @@
+"use client";
 import React from 'react'
 
 
 import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
+    Table,
+    TableBody,
+    TableCaption,
+    TableCell,
+    TableFooter,
+    TableHead,
+    TableHeader,
+    TableRow,
 } from "@/components/ui/table"
 
 import {
@@ -20,7 +21,10 @@ import {
     CardTitle,
 } from "@/components/ui/card"
 import { Button } from '@/components/ui/button'
-import { Edit, Plus, Trash2 } from 'lucide-react'
+import { Edit } from 'lucide-react'
+import AddRegionalDialog from './AddRegionalDialog'
+import DeleteButton from './DeleteButton';
+import { deleteRegion } from '@/actions/locations';
 
 interface RegionsTableProps {
     allRegions: {
@@ -29,16 +33,14 @@ interface RegionsTableProps {
     }[];
 }
 
-const RegionsTable = async ({allRegions}: RegionsTableProps) => {
-    
+const RegionsTable = ({ allRegions }: RegionsTableProps) => {
+
     return (
         <Card>
             <CardHeader>
                 <div className="flex justify-between items-center gap-2">
                     <CardTitle>Regions</CardTitle>
-                    <Button size="sm">
-                        <Plus className='mr-2 h-4 w-4' /> Add Region
-                    </Button>
+                    <AddRegionalDialog />
                 </div>
                 <CardDescription>Manage regions → districts → cities. Use these for consistent property addressing</CardDescription>
             </CardHeader>
@@ -59,9 +61,12 @@ const RegionsTable = async ({allRegions}: RegionsTableProps) => {
                                     <Button size="icon" variant={"ghost"} className='bg-green-400 text-white cursor-pointer'>
                                         <Edit className='h-4 w-4' />
                                     </Button>
-                                    <Button size="icon" variant={"ghost"} className='bg-red-400 text-white cursor-pointer'>
-                                        <Trash2 className='h-4 w-4' />
-                                    </Button>
+                                    <DeleteButton
+                                        id={region.id}
+                                        itemName={region.name}
+                                        itemType="region"
+                                        onDelete={() => deleteRegion(region.id)}
+                                    />
                                 </TableCell>
                             </TableRow>
                         ))}

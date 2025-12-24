@@ -1,8 +1,46 @@
 import React from 'react'
 import Link from 'next/link'
-import RandomImageClient from '@/components/shared/RandomImage.client'
+import { currentUser } from '@clerk/nextjs/server'
 
-const AuthLayout = ({ children }: { children: React.ReactNode }) => {
+import RandomImageClient from '@/components/shared/RandomImage.client'
+import { Button } from '@/components/ui/button'
+
+const AuthLayout = async ({ children }: { children: React.ReactNode }) => {
+  const clerkUser = await currentUser();
+
+  if (clerkUser) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 px-4">
+        <div className="w-full max-w-md">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-10 text-center border border-slate-200 dark:border-slate-700 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="mx-auto w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mb-6">
+              <svg className="w-10 h-10 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+
+            <h1 className="text-3xl font-bold text-foreground mb-3">
+              You&apos;re Already Logged In
+            </h1>
+
+            <p className="text-muted-foreground mb-8 max-w-sm mx-auto">
+              Welcome back! You already have an active session.
+            </p>
+
+            <Button asChild size="lg" className="w-full max-w-xs">
+              <Link href="/dashboard">
+                Go to Dashboard
+              </Link>
+            </Button>
+
+            <p className="mt-6 text-sm text-muted-foreground">
+              Or <Link href="/" className="text-primary hover:underline font-medium">return to homepage</Link>
+            </p>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <main className="min-h-screen relative">
