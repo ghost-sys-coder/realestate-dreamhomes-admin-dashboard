@@ -64,3 +64,22 @@ interface PropertyProps {
     }
 }
 
+
+// address types
+interface Regions {
+    id: string;
+    name: string;
+}
+
+interface Districts {
+    id: string;
+    name: string;
+    regionId: string;
+}
+
+interface Locations {
+    id: string;
+    name: string;
+    districtId: string;
+}
+

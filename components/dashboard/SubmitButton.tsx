@@ -9,7 +9,7 @@ const SubmitButton = ({buttonText}: {buttonText: string}) => {
     const { pending } = useFormStatus();
 
     return (
-        <Button type="submit" className='mt-4' disabled={pending}>
+        <Button type="submit" className='mt-4 cursor-pointer' disabled={pending}>
             {pending ? (
                 <>
                     <Loader2 className='mr-2 h-4 w-4 animate-spin' />

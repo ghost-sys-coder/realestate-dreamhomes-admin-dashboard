@@ -34,13 +34,13 @@ const DeleteButton: React.FC<DeleteButtonProps> = ({ id, itemName, itemType, onD
 
         if (!result.success) {
             toast.error(result.message);
+            return;
         } else {
             toast.success(result.message);
             setOpen(false);
         }
 
         setIsLoading(false);
-        setOpen(false);
     }
 
     return (

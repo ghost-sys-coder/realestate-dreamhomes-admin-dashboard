@@ -20,11 +20,11 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
-import { Button } from '@/components/ui/button'
-import { Edit } from 'lucide-react'
+
 import AddRegionalDialog from './AddRegionalDialog'
 import DeleteButton from './DeleteButton';
 import { deleteRegion } from '@/actions/locations';
+import EditRegionDialog from './EditRegionDialog';
 
 interface RegionsTableProps {
     allRegions: {
@@ -58,9 +58,7 @@ const RegionsTable = ({ allRegions }: RegionsTableProps) => {
                             <TableRow key={region.id}>
                                 <TableCell className='font-medium'>{region.name}</TableCell>
                                 <TableCell className='flex gap-2'>
-                                    <Button size="icon" variant={"ghost"} className='bg-green-400 text-white cursor-pointer'>
-                                        <Edit className='h-4 w-4' />
-                                    </Button>
+                                    <EditRegionDialog id={region.id} name={region.name} />
                                     <DeleteButton
                                         id={region.id}
                                         itemName={region.name}

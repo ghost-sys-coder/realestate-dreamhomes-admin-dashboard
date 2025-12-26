@@ -86,11 +86,11 @@ export const propertiesTable = pgTable("properties", {
   negotiable: boolean("negotiable").default(false),
 
   // address
-  street: text("street"),
+  country: text("country").notNull().default("Uganda"),
+  region: text("region").notNull(), // usually not needed in UG
+  district: text("district").notNull(),
   city: text("city").notNull(),
   neighbourhood: text("neighbourhood"), // e.g kololo
-  state: text("state"), // usually not needed in UG
-  country: text("country").notNull().default("Uganda"),
   zipCode: text("zip_code"),
   latitude: doublePrecision("latitude"),
   longitude: doublePrecision("longitude"),
