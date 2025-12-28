@@ -21,7 +21,7 @@ export const propertySchema = z.object({
     "commercial",
     "land",
     "other",
-  ]).default("apartment"),
+  ]),
     purpose: z.enum(["sale", "rent", "both"]).default("sale"),
     // pricing
     salePrice: z.coerce.number().optional(),
@@ -41,7 +41,7 @@ export const propertySchema = z.object({
     status: z.enum(["active", "pending", "sold", "rented", "draft",]).default("draft"),
     featured: z.boolean().default(false),
 
-    images: z.array(z.string()).min(3, { message: "At least 3 images are required" }),
+    images: z.array(z.instanceof(File)).min(3, {message: "Upload at least 3 images"}),
     amenities: z.array(z.string()).default([]),
 
     author: z.string().min(1, { message: "Author is required" })
