@@ -22,7 +22,7 @@ export const propertySchema = z.object({
     "land",
     "other",
   ]),
-    purpose: z.enum(["sale", "rent", "both"]).default("sale"),
+    purpose: z.enum(["sale", "rent", "both"]),
     // pricing
     salePrice: z.coerce.number().optional(),
     rentPrice: z.coerce.number().optional(),
