@@ -1,12 +1,13 @@
 import React from 'react';
+import Image from 'next/image';
+
 import { PropertyFormProps } from '@/types';
 import { toast } from 'sonner';
 import { toastErrorStyles } from '../FormButtons';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertCircle, ImagePlus, X } from 'lucide-react';
+import { AlertCircle, ArrowLeft, ArrowRight, ImagePlus, X } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 
 const imageGuidelines = [
@@ -57,7 +58,18 @@ const FormImages: React.FC<PropertyFormProps> = ({ form }) => {
 
   const handleRemoveImage = (index: number) => {
     const updatedImages = images.filter((_, i) => i !== index);
-    form.setValue("images", [...updatedImages], {shouldValidate: true})
+    form.setValue("images", [...updatedImages], { shouldValidate: true })
+  }
+
+  // arrow image re-ordering
+  const handleMoveImage = (from: number, to: number) => {
+    if (to < 0 || to >= images.length) return;
+
+    const updated = [...images];
+    const [moved] = updated.splice(from, 1);
+    updated.splice(to, 0, moved);
+
+    form.setValue("images", updated, { shouldValidate: true });
   }
   return (
     <div className='space-y-8'>
@@ -106,13 +118,33 @@ const FormImages: React.FC<PropertyFormProps> = ({ form }) => {
                     className='h-40 w-full object-cover'
                     width={100} height={100}
                   />
-                  <span className="absolute top-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded-sm">
-                    Cover
-                  </span>
+                  {index === 0 && (
+                    <span className="absolute top-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded-sm">
+                      Cover
+                    </span>
+                  )}
+                  <div className="absolute bottom-2 left-2 right-2 flex justify-between opacity-0 hover:opacity-100 transition">
+                    <Button
+                      size={"icon"}
+                      variant={"secondary"}
+                      disabled={index === 0}
+                      onClick={() => handleMoveImage(index, index-1)}
+                    >
+                      <ArrowLeft />
+                    </Button>
+                    <Button
+                      size={"icon"}
+                      variant={"secondary"}
+                      disabled={index === images.length - 1}
+                      onClick={() => handleMoveImage(index, index + 1)}
+                    >
+                      <ArrowRight />
+                    </Button>
+                  </div>
                   <Button
                     size={"icon"}
                     type='button'
-                    className='absolute bottom-2 right-2 rounded-full cursor-pointer'
+                    className='absolute top-2 right-2 rounded-full cursor-pointer'
                     variant={"destructive"}
                     onClick={() => handleRemoveImage(index)}
                   >

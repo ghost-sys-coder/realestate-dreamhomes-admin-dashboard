@@ -88,8 +88,14 @@ export const propertiesTable = pgTable("properties", {
   // address
   country: text("country").notNull().default("Uganda"),
   region: text("region").notNull(), // usually not needed in UG
-  district: text("district").notNull(),
+  district: text("district").notNull(),  
   city: text("city").notNull(),
+
+  // let's use names here
+  regionId: uuid("region_id").references(()=> regionsTable.id),
+  districtId: uuid("district_id").references(()=> districtsTable.id),
+  locationId: uuid("location_id").references(() => locationsTable.id),
+
   neighbourhood: text("neighbourhood"), // e.g kololo
   zipCode: text("zip_code"),
   latitude: doublePrecision("latitude"),

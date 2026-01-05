@@ -46,6 +46,7 @@ const FormPricingInfo: React.FC<PropertyFormProps> = ({ form }) => {
           placeholder={`Sale price.... ${selectedCurrency} 200,000,000`}
           id='form-rhf-price'
           descLabel='Sale Price for apartments up for sale'
+          type="number"
         />
         {isPurpose && (
           <>
@@ -65,6 +66,7 @@ const FormPricingInfo: React.FC<PropertyFormProps> = ({ form }) => {
               placeholder={`Sale price.... ${selectedCurrency} 200,000`}
               id='form-rhf-rent'
               descLabel='Rental Price for properties up for rent'
+              type="number"
             />
           </>
         )}

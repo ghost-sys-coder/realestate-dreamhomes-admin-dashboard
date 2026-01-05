@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button'
 
 import { PropertyFormProps } from '@/types'
 import { toast } from 'sonner';
+import { Loader2 } from 'lucide-react';
 
 export const toastErrorStyles = {
     duration: 3000,
@@ -18,10 +19,15 @@ interface FormButtonProps extends PropertyFormProps {
     handleNext?: () => void;
     handlePrev?: () => void;
     steps: string[];
-    handleSubmit: () => void;
+    handleSubmit?: () => void;
+    isSubmit: boolean;
 }
 
-const FormButtons: React.FC<FormButtonProps> = ({ form, currentStep, handleNext, handlePrev, steps, handleSubmit }) => {
+const FormButtons: React.FC<FormButtonProps> = ({
+    form, currentStep, handleNext,
+    handlePrev, steps,
+    isSubmit
+}) => {
     const purpose = form.watch("purpose");
     const isPurpose = purpose === "both" || purpose === "rent";
 
@@ -37,18 +43,22 @@ const FormButtons: React.FC<FormButtonProps> = ({ form, currentStep, handleNext,
         }
 
         if (currentStep === 2) {
-            isValid = isPurpose ? await form.trigger("rentPrice") : await form.trigger("salePrice"); 
+            isValid = await form.trigger(["bedrooms", "bathrooms", "yearBuilt"]);
         }
 
         if (currentStep === 3) {
+            isValid = isPurpose ? await form.trigger("rentPrice") : await form.trigger("salePrice");
+        }
+
+        if (currentStep === 4) {
             // isValid = await form.trigger("amenities");
             const amenities = await form.getValues("amenities");
-            if (amenities.length === 0) {
+            if (amenities?.length === 0) {
                 toast.error("Choose or add available amenities for your property!", toastErrorStyles);
-                return;   
+                return;
             }
         }
-        
+
 
         if (!isValid) {
             toast.error("Fix errors before proceeding", toastErrorStyles);
@@ -81,9 +91,13 @@ const FormButtons: React.FC<FormButtonProps> = ({ form, currentStep, handleNext,
                     <Button
                         className='w-40 cursor-pointer hover:opacity-60'
                         type="submit"
-                        onClick={handleSubmit}
                     >
-                        Save
+                        {isSubmit ? (
+                            <>
+                                <Loader2 className='animate-spin' />
+                                Saving...
+                            </>
+                        ) : (<span>Save</span>)}
                     </Button>
                 )}
             </div>
