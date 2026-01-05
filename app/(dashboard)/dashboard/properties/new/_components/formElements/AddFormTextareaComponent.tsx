@@ -32,7 +32,7 @@ const AddFormTextareaComponent = <T extends FieldValues>({ control, name, label,
                         />
                         <InputGroupAddon align={"block-end"}>
                             <InputGroupText className='tabular-nums'>
-                                {field.value.length} / 100 characters
+                                {field.value.length} / 2000 characters
                             </InputGroupText>
                         </InputGroupAddon>
                     </InputGroup>

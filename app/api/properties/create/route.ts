@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
     }
     try {
         const formData = await request.formData();
-        console.log({ formData });
+
         const files = formData.getAll("images") as File[];
 
         // save images to amazon aws and extract urls
@@ -99,7 +99,7 @@ export async function POST(request: NextRequest) {
             success: true,
             message: "Property has been created successfully!",
             property,
-        })
+        }, { status: 201})
     } catch (error) {
         console.error("Failed to create apartment:", error);
         return NextResponse.json({

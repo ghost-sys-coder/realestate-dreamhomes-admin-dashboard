@@ -17,6 +17,8 @@ import FormButtons, { toastErrorStyles } from './FormButtons';
 import { toast } from 'sonner';
 import FormDetails from './formSteps/FormDetails';
 import { generateSlug } from '@/utils/slug';
+import { getAxiosError } from '@/utils/error';
+import PropertySuccessScreen from './formSteps/PropertySuccessScreen';
 
 
 interface CreatePropertyFormProps {
@@ -31,13 +33,14 @@ const steps = [
   "Location",
   "Pricing",
   "Amenities",
-  "Images & Reviews"
+  "Images & Reviews",
+  "Success"
 ];
 
 export const formSchema = z.object({
   title: z.string().min(5, { message: "Title must be at least 5 characters" }),
   slug: z.string().optional(),
-  description: z.string().min(10, { message: "Description must be 50 characters" }),
+  description: z.string().min(100, { message: "Description must be 100 characters" }),
   type: z.enum(["apartment", "house", "bungalow", "mansion", "office", "condo", "townhouse", "villa", "studio", "penthouse", "commercial", "land", "other",
   ]),
   purpose: z.enum(["rent", "sale", "both"]),
@@ -59,7 +62,7 @@ export const formSchema = z.object({
 
   // programmatically set location ids
   regionId: z.string().optional(),
-  districnId: z.string().optional(),
+  districtId: z.string().optional(),
   locationId: z.string().optional(),
 
   status: z.enum(["active", "pending", "sold", "rented", "draft"]),
@@ -203,17 +206,19 @@ const CreatePropertyForm: React.FC<CreatePropertyFormProps> = ({ regions, distri
         }
       );
 
-      if (response.status === 200) {
+      if (response.status === 201) {
         toast.success("Property successfully added!");
+        setCurrentStep(steps.length - 1);
       }
 
     } catch (error) {
-      console.log("Failed to submit form data:", error);
-      toast.error("Failed to save property data.");
+      const message = await getAxiosError(error);
+      toast.error(message, toastErrorStyles);
     } finally {
       setIsSubmitting(false);
     }
   }
+
   return (
     <div className='max-w-5xl mx-auto'>
       <h1 className="text-3xl font-bold mb-4">Add New Property</h1>
@@ -238,15 +243,18 @@ const CreatePropertyForm: React.FC<CreatePropertyFormProps> = ({ regions, distri
           )}
           {currentStep === 5 && <FormImages form={form} />}
         </FieldGroup>
-        <FormButtons
-          steps={steps}
-          currentStep={currentStep}
-          handleNext={handleNext}
-          handlePrev={handlePrev}
-          form={form}
-          handleSubmit={form.handleSubmit(onSubmit)}
-          isSubmit={isSubmitting}
-        />
+        {currentStep === 6 && <PropertySuccessScreen />}
+        {currentStep !== steps.length - 1 && (
+          <FormButtons
+            steps={steps}
+            currentStep={currentStep}
+            handleNext={handleNext}
+            handlePrev={handlePrev}
+            form={form}
+            handleSubmit={form.handleSubmit(onSubmit)}
+            isSubmit={isSubmitting}
+          />
+        )}
       </form>
     </div>
   )

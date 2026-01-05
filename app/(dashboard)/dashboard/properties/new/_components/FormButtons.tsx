@@ -29,45 +29,48 @@ const FormButtons: React.FC<FormButtonProps> = ({
     isSubmit
 }) => {
     const purpose = form.watch("purpose");
-    const isPurpose = purpose === "both" || purpose === "rent";
+    const isRentOrBoth = purpose === "both" || purpose === "rent";
 
     const handleNextStep = async () => {
         let isValid = true;
 
-        if (currentStep === 0) {
-            isValid = await form.trigger(["title", "description"]);
+        switch (currentStep) {
+            case 0:
+                isValid = await form.trigger(["title", "description"]);
+                break;
+            case 1:
+                isValid = await form.trigger(["region", "district", "city", "status"]);
+                break;
+            case 2:
+                isValid = await form.trigger(["bedrooms", "bathrooms", "yearBuilt"]);
+                break;
+            case 3:
+                if (isRentOrBoth) {
+                    isValid = await form.trigger("rentPrice");
+                } else {
+                    isValid = await form.trigger("salePrice");
+                }
+                break;
+            case 4:
+                const amenities = await form.getValues("amenities");
+                if (!amenities || amenities.length === 0) {
+                    toast.error("Choose or add available amenities for your property!", toastErrorStyles);
+                    return;
+                }
+                break;
+            default:
+                break;
         }
-
-        if (currentStep === 1) {
-            isValid = await form.trigger(["region", "district", "city", "status"]);
-        }
-
-        if (currentStep === 2) {
-            isValid = await form.trigger(["bedrooms", "bathrooms", "yearBuilt"]);
-        }
-
-        if (currentStep === 3) {
-            isValid = isPurpose ? await form.trigger("rentPrice") : await form.trigger("salePrice");
-        }
-
-        if (currentStep === 4) {
-            // isValid = await form.trigger("amenities");
-            const amenities = await form.getValues("amenities");
-            if (amenities?.length === 0) {
-                toast.error("Choose or add available amenities for your property!", toastErrorStyles);
-                return;
-            }
-        }
-
 
         if (!isValid) {
-            toast.error("Fix errors before proceeding", toastErrorStyles);
+            toast.error("Please fix errors before proceeding", toastErrorStyles);
             return;
         }
 
-
         handleNext?.();
     }
+
+    const isLastContentStep = currentStep === steps.length - 2;
 
     return (
         <div className="flex items-center gap-2 my-5">
@@ -80,14 +83,7 @@ const FormButtons: React.FC<FormButtonProps> = ({
                 </Button>
             )}
             <div className="ml-auto">
-                {currentStep < steps.length - 1 ? (
-                    <Button
-                        type="button"
-                        className='w-40 cursor-pointer hover:opacity-60'
-                        onClick={handleNextStep}>
-                        Next
-                    </Button>
-                ) : (
+                {isLastContentStep ? (
                     <Button
                         className='w-40 cursor-pointer hover:opacity-60'
                         type="submit"
@@ -98,6 +94,13 @@ const FormButtons: React.FC<FormButtonProps> = ({
                                 Saving...
                             </>
                         ) : (<span>Save</span>)}
+                    </Button>
+                ) : (
+                    <Button
+                        type="button"
+                        className='w-40 cursor-pointer hover:opacity-60'
+                        onClick={handleNextStep}>
+                        Next
                     </Button>
                 )}
             </div>
