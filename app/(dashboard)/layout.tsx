@@ -44,7 +44,7 @@ const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
         <header className='flex h-16 shrink-0 items-center gap-2 border-b px-4 sticky top-0 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 z-20'>
           <SidebarTrigger className='md:hidden' />
           <div className="flex flex-1 items-center justify-between">
-            <h1 className="text-xl font-semibold">DreamHomes Properties</h1>
+            <h1 className="text-xl font-semibold">Vaal Properties</h1>
             <div className="flex items-center gap-2">
               <UserButton />
             </div>

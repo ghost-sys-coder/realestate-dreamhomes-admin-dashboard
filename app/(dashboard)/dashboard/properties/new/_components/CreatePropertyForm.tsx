@@ -82,7 +82,7 @@ export type PropertySchemaValues = z.infer<typeof formSchema>;
 
 
 const CreatePropertyForm: React.FC<CreatePropertyFormProps> = ({ regions, districts, locations }) => {
-  const [currentStep, setCurrentStep] = useState(6);
+  const [currentStep, setCurrentStep] = useState(0);
   const [details, setDetails] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 

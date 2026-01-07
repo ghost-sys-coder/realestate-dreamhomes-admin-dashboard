@@ -15,7 +15,7 @@ const menuItems = [
 const SidebarGroupComponent = () => {
   return (
       <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-          <SidebarGroupLabel>DreamHomes Properties</SidebarGroupLabel>
+          <SidebarGroupLabel>Vaal Properties</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className='mt-3 min-h-[calc(75vh-8rem)] flex flex-col justify-between'>
               {menuItems.map((item) => (

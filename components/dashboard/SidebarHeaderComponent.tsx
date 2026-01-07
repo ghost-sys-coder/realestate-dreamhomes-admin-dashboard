@@ -12,7 +12,7 @@ const SidebarHeaderComponent = () => {
                   <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                           <SidebarMenuButton tooltip="Settings" className='w-full justify-between'>
-                              DreamHomes
+                              Vaal Properties
                               <ChevronDown className='mt-auto' />
                           </SidebarMenuButton>
                       </DropdownMenuTrigger>

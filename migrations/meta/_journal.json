@@ -43,6 +43,27 @@
       "when": 1767568045110,
       "tag": "0005_curly_rawhide_kid",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1767689762421,
+      "tag": "0006_lush_ulik",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1767691184350,
+      "tag": "0007_green_vargas",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1767775406299,
+      "tag": "0008_empty_moon_knight",
+      "breakpoints": true
     }
   ]
 }

@@ -10,6 +10,7 @@ import {
   doublePrecision,
   jsonb,
   integer,
+  serial,
 } from "drizzle-orm/pg-core";
 
 export const roleEnum = pgEnum("role", [
@@ -175,3 +176,55 @@ export const locationsTable = pgTable("locations", {
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull()
 })
+
+
+/**
+ * ! agent tables
+ */
+export const agentStatus = pgEnum("agent_status", ["pending", "draft", "approved"])
+
+export const agentsTable = pgTable("agents", {
+  id: serial("id").primaryKey(),
+  clerkId: text("clerk_id").notNull().unique(),
+  firstName: text("first_name").notNull(),
+  lastName: text("last_name").notNull(),
+  email: text("email").notNull().unique(),
+  password: text("password").notNull(),
+  phoneNumber: text("phone_number").notNull(),
+  role: roleEnum("role").notNull().default("agent"),
+  status: agentStatus("status").notNull().default("approved"),
+  bio: text("bio"),
+  photoUrl: text("photo_url"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export type InsertAgent = typeof agentsTable.$inferInsert;
+
+
+// agents document table
+export const documentTypeEnum = pgEnum("document_type", [
+  "national_id",
+  "passport",
+  "real_estate_licence",
+  "employment_contract",
+  "professional_certificate",
+  "proof_of_address",
+  "other"
+]);
+
+export const documentStatusEnum = pgEnum("document_status", ["pending", "verified", "reject"]);
+
+export const agentDocumentsTable = pgTable("agent_documents", {
+  id: serial("id").primaryKey(),
+  agentId: integer("agent_id").notNull().references(() => agentsTable.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  type: documentTypeEnum("type").notNull(),
+  status: documentStatusEnum("status").notNull().default("pending"),
+  key: text("key").notNull(), // S3 object key
+  url: text("url").notNull(), // Public S3 url
+  size: integer("size"), // bytes
+  uploadedAt: timestamp("uploaded_at").defaultNow().notNull()
+});
+
+export type InsertAgentDocument = typeof agentDocumentsTable.$inferInsert;

@@ -24,7 +24,7 @@ const AddFormSelect = <T extends FieldValues>({
                 <Field data-invalid={fieldState.invalid}>
                     <FieldContent>
                         <FieldLabel>{label}</FieldLabel>
-                        <span className="text-sm text-gray-400">Select the most appropriate</span>
+                        {/* <span className="text-sm text-gray-400">Select the most appropriate</span> */}
                     </FieldContent>
                     <Select
                         name={name}
