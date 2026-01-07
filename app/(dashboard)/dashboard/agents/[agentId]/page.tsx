@@ -10,7 +10,7 @@ interface AgentDetailsPageProps {
     searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-const AgentDetailsPage: React.FC<AgentDetailsPageProps> = async ({ params }) => {
+const AgentDetailsPage = async ({ params }: AgentDetailsPageProps) => {
     const { agentId } = await params;
 
     const agent = await getSingleAgent(Number(agentId));
