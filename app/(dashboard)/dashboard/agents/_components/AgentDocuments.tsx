@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { FileText, Upload, Download, Eye, Trash2, AlertCircle } from 'lucide-react';
+import Link from 'next/link';
 
 interface Document {
   id: string;
@@ -15,6 +16,10 @@ interface Document {
   url?: string; // In real app: S3 URL
 }
 
+interface AgentDocumentProps {
+  agentId: number;
+}
+
 const mockDocuments: Document[] = [
   { id: '1', name: 'National ID Card', type: 'ID', uploadedAt: new Date('2025-11-15'), status: 'verified' },
   { id: '2', name: 'Real Estate License', type: 'License', uploadedAt: new Date('2025-12-01'), status: 'verified' },
@@ -22,7 +27,7 @@ const mockDocuments: Document[] = [
   { id: '4', name: 'Professional Certificate', type: 'Certificate', uploadedAt: new Date('2025-10-20'), status: 'rejected' },
 ];
 
-const AgentDocuments: React.FC = () => {
+const AgentDocuments: React.FC<AgentDocumentProps> = ({agentId}) => {
   const getStatusVariant = (status: Document['status']): "default" | "secondary" | "destructive" => {
     switch (status) {
       case 'verified': return 'default';
@@ -50,9 +55,11 @@ const AgentDocuments: React.FC = () => {
                 Manage and verify required documents for compliance at Vaal Properties
               </CardDescription>
             </div>
-            <Button>
-              <Upload className="mr-2 h-4 w-4" />
+            <Button asChild>
+              <Link href={`/dashboard/agents/${agentId}/documents`}>
+                <Upload className="mr-2 h-4 w-4" />
               Upload New Document
+              </Link>
             </Button>
           </div>
         </CardHeader>

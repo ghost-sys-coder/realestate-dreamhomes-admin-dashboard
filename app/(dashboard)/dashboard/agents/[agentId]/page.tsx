@@ -28,7 +28,7 @@ const AgentDetailsPage = async ({ params }: AgentDetailsPageProps) => {
                     <AgentProfile agent={agent} />
                 </TabsContent>
                 <TabsContent value='documents'>
-                    <AgentDocuments />
+                    <AgentDocuments agentId={Number(agentId)} />
                 </TabsContent>
                 <TabsContent value='verification'>
                     <AgentVerification status={agent?.status || "draft"} agentId={Number(agentId)} />

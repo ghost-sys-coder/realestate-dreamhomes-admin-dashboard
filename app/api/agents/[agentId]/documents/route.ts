@@ -5,11 +5,29 @@ import { s3Client } from "@/utils/aws-s3";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { eq } from "drizzle-orm";
 
-interface ParamsProps {
-    params: { agentId: string}
+
+export async function POST(request: NextRequest, ctx: RouteContext<"/api/agents/[agentId]/documents">) {
+    const { agentId } = await ctx.params;
+    console.log({ agentId });
+    try {
+        const formData = await request.formData();
+
+        
+        return NextResponse.json({
+            success: true,
+            message: "Agent document has been uploaded",
+            formData
+        }, { status: 200 });
+    } catch (error) {
+        console.error("Failed to upload document", error);
+        return NextResponse.json({
+            success: false,
+            message: "Something went wrong!"
+        }, { status: 500})
+    }
 }
 
-export async function POST(request: NextRequest, { params }: ParamsProps) {
+export async function GET(request: NextRequest, { params }: { params: { agentId: string}}) {
     try {
         const { agentId } = params;
         const agentIdNum = Number(agentId);
