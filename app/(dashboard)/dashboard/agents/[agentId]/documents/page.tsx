@@ -33,7 +33,7 @@ const UploadDocumentsPage = async ({ params }: {params: Promise<{agentId: string
         </div>
       </div>
 
-      <DocumentUploadForm agentId={Number(agentId)} agentName={fullName} />
+      <DocumentUploadForm agentId={Number(agentId)} />
     </div>
   );
 };

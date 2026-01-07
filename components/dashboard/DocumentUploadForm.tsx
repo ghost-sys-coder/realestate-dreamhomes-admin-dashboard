@@ -1,13 +1,14 @@
 "use client";
 
-import React, { useState } from 'react';
-import { useDropzone } from 'react-dropzone';
+import React, { useRef, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Upload, FileText, X, Loader2, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import { toastErrorStyles } from '@/app/(dashboard)/dashboard/properties/new/_components/FormButtons';
+import { Input } from '../ui/input';
 
 type DocumentType =
     | "national_id"
@@ -18,8 +19,7 @@ type DocumentType =
     | "proof_of_address"
     | "other";
 
-interface FileWithPreview extends File {
-    preview?: string;
+interface SelectedFile extends File {
     type: DocumentType;
 }
 
@@ -35,50 +35,46 @@ const documentTypeLabels: Record<DocumentType, string> = {
 
 interface DocumentUploadFormProps {
     agentId: number;
-    agentName?: string;
 }
 
 const DocumentUploadForm: React.FC<DocumentUploadFormProps> = ({ agentId }) => {
-    const [files, setFiles] = useState<FileWithPreview[]>([]);
+    const [files, setFiles] = useState<SelectedFile[]>([]);
     const [isUploading, setIsUploading] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
     const router = useRouter();
 
-    const onDrop = (acceptedFiles: File[]) => {
-        const newFiles = acceptedFiles.map((file) => ({
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const selected = Array.from(e.target.files || []);
+        if (selected.length === 0) return;
+
+        const pdfFiles = selected.filter(file => file.type === 'application/pdf');
+
+        if (pdfFiles.length !== selected.length) {
+            toast.error("Only PDF files are allowed", toastErrorStyles);
+            return;
+        }
+
+        const newFiles: SelectedFile[] = pdfFiles.map(file => ({
             ...file,
-            preview: URL.createObjectURL(file),
-            type: "other" as DocumentType, // default
+            type: "other" as DocumentType,
         }));
-        setFiles((prev) => [...prev, ...newFiles]);
+
+        setFiles(prev => [...prev, ...newFiles]);
     };
 
-    const { getRootProps, getInputProps, isDragActive } = useDropzone({
-        onDrop,
-        accept: {
-            'image/*': ['.png', '.jpg', '.jpeg'],
-            'application/pdf': ['.pdf'],
-        },
-        maxSize: 15 * 1024 * 1024, // 15MB
-        multiple: true,
-    });
-
     const removeFile = (index: number) => {
-        setFiles((prev) => prev.filter((_, i) => i !== index));
-        // Revoke preview URL
-        if (files[index]?.preview) {
-            URL.revokeObjectURL(files[index].preview!);
-        }
+        setFiles(prev => prev.filter((_, i) => i !== index));
     };
 
     const updateFileType = (index: number, type: DocumentType) => {
-        setFiles((prev) =>
+        setFiles(prev =>
             prev.map((file, i) => (i === index ? { ...file, type } : file))
         );
     };
 
     const uploadDocuments = async () => {
         if (files.length === 0) {
-            toast.error("Please select at least one document");
+            toast.error("Please select at least one PDF document", toastErrorStyles);
             return;
         }
 
@@ -87,9 +83,8 @@ const DocumentUploadForm: React.FC<DocumentUploadFormProps> = ({ agentId }) => {
 
         files.forEach((file) => {
             formData.append("files", file);
-            formData.append("types", file.type);
+            formData.append("types", file.type); // One type per file
         });
-
 
         try {
             const res = await fetch(`/api/agents/${agentId}/documents`, {
@@ -99,16 +94,18 @@ const DocumentUploadForm: React.FC<DocumentUploadFormProps> = ({ agentId }) => {
 
             const data = await res.json();
 
-            if (!res.ok) throw new Error(data.error || "Upload failed");
+            if (!res.ok || !data.success) {
+                toast.error(data.message || "Failed to upload documents", toastErrorStyles);
+                return;
+            }
 
-            console.log({ data });
-
-            toast.success(`${files.length} document(s) uploaded successfully!`);
-            //   setFiles([]);
-            //   router.push(`/agents/${agentId}`);
-            //   router.refresh();
+            toast.success(`${files.length} PDF document(s) uploaded successfully!`);
+            setFiles([]);
+            // router.push(`/dashboard/agents/${agentId}`);
+            // router.refresh();
         } catch (error) {
-            toast.error((error as Error).message);
+            console.error("Something went wrong", error);
+            toast.error("Network error. Please try again.", toastErrorStyles);
         } finally {
             setIsUploading(false);
         }
@@ -118,36 +115,51 @@ const DocumentUploadForm: React.FC<DocumentUploadFormProps> = ({ agentId }) => {
         <div className="space-y-8">
             <Card>
                 <CardHeader>
-                    <CardTitle>Select & Categorize Documents</CardTitle>
+                    <CardTitle>Upload Agent Documents (PDF Only)</CardTitle>
                     <CardDescription>
-                        Drag and drop files or click to browse. Assign correct document type for compliance.
+                        Select PDF documents and assign the correct category for KYC compliance at Vaal Properties.
                     </CardDescription>
                 </CardHeader>
-                <CardContent>
-                    <div
-                        {...getRootProps()}
-                        className={`border-2 border-dashed rounded-lg p-12 text-center cursor-pointer transition-all ${isDragActive ? "border-primary bg-primary/5" : "border-muted-foreground/30"
-                            } ${isUploading ? "opacity-50 pointer-events-none" : ""}`}
-                    >
-                        <input {...getInputProps()} />
-                        <Upload className="mx-auto h-16 w-16 text-muted-foreground mb-4" />
-                        <p className="text-lg font-medium">
-                            {isDragActive ? "Drop files here" : "Drag & drop documents here"}
-                        </p>
-                        <p className="text-sm text-muted-foreground mt-2">
-                            PDF, PNG, JPG • Max 15MB each • Multiple files supported
+                <CardContent className="space-y-6">
+                    <div className="flex flex-col items-center justify-center py-12 border-2 border-dashed rounded-lg bg-muted/30">
+                        <FileText className="h-16 w-16 text-muted-foreground mb-4" />
+                        <Button
+                            size="lg"
+                            onClick={() => fileInputRef.current?.click()}
+                            disabled={isUploading}
+                        >
+                            <Upload className="mr-2 h-5 w-5" />
+                            Browse PDF Files
+                        </Button>
+                        <p className="mt-4 text-sm text-muted-foreground">
+                            Only PDF files • Multiple selection allowed • Max 15MB each
                         </p>
                     </div>
 
+                    <Input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="application/pdf"
+                        multiple
+                        onChange={handleFileChange}
+                        className="hidden"
+                    />
+
                     {files.length > 0 && (
-                        <div className="mt-8 space-y-4">
-                            <h3 className="font-semibold text-lg">Selected Files ({files.length})</h3>
+                        <div className="space-y-4">
+                            <h3 className="font-semibold text-lg">
+                                Selected PDFs ({files.length})
+                            </h3>
                             {files.map((file, index) => (
-                                <div key={index} className="flex items-center gap-4 p-4 rounded-lg border bg-muted/30">
-                                    <FileText className="h-10 w-10 text-primary" />
-                                    <div className="flex-1">
-                                        <p className="font-medium truncate max-w-md">{file.name}</p>
+                                <div
+                                    key={index}
+                                    className="flex items-center gap-4 p-4 rounded-lg border bg-card hover:shadow-sm transition-shadow"
+                                >
+                                    <FileText className="h-10 w-10 text-primary shrink-0" />
+                                    <div className="flex-1 min-w-0">
+                                        <p className="font-medium truncate">{file.name}</p>
                                         <p className="text-sm text-muted-foreground">
+                                            {/* this return NaN MB */}
                                             {(file.size / 1024 / 1024).toFixed(2)} MB
                                         </p>
                                     </div>
@@ -155,9 +167,10 @@ const DocumentUploadForm: React.FC<DocumentUploadFormProps> = ({ agentId }) => {
                                     <Select
                                         value={file.type}
                                         onValueChange={(value) => updateFileType(index, value as DocumentType)}
+                                        disabled={isUploading}
                                     >
                                         <SelectTrigger className="w-64">
-                                            <SelectValue />
+                                            <SelectValue placeholder="Select document type" />
                                         </SelectTrigger>
                                         <SelectContent>
                                             {Object.entries(documentTypeLabels).map(([value, label]) => (
@@ -199,12 +212,12 @@ const DocumentUploadForm: React.FC<DocumentUploadFormProps> = ({ agentId }) => {
                     {isUploading ? (
                         <>
                             <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                            Uploading...
+                            Uploading PDFs...
                         </>
                     ) : (
                         <>
                             <CheckCircle2 className="mr-2 h-5 w-5" />
-                            Upload {files.length} Document{files.length !== 1 ? 's' : ''}
+                            Upload {files.length} PDF{files.length !== 1 ? 's' : ''}
                         </>
                     )}
                 </Button>
