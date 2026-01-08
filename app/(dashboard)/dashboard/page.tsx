@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { TrendingUp, TrendingDown, Home, DollarSign, Users, MapPin, Bed, Bath, Square } from 'lucide-react';
 import Image from 'next/image';
+import { Button } from '@/components/ui/button';
+
 
 const Dashboard = () => {
   const [selectedPeriod, setSelectedPeriod] = useState('This Week');
@@ -225,16 +227,16 @@ const Dashboard = () => {
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-semibold text-gray-900">Explore Your Properties</h3>
             <div className="flex gap-2">
-              <button className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors">
+              <Button variant={"ghost"} className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors">
                 Filters
-              </button>
-              <button className="px-4 py-2 text-sm bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors">
+              </Button>
+              <Button className="px-4 py-2 text-sm bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors">
                 Add Property
-              </button>
+              </Button>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 md:grid-cols-3 gap-6">
             {properties.map((property) => (
               <div key={property.id} className="group cursor-pointer">
                 <div className="relative rounded-xl overflow-hidden mb-4">
@@ -258,7 +260,7 @@ const Dashboard = () => {
                 
                 <div>
                   <div className="flex items-start justify-between mb-2">
-                    <h4 className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                    <h4 className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors text-sm">
                       {property.title}
                     </h4>
                     <span className="text-lg font-bold text-blue-600">{property.price}</span>
@@ -269,7 +271,7 @@ const Dashboard = () => {
                     {property.location}
                   </p>
                   
-                  <div className="flex items-center gap-4 text-sm text-gray-600">
+                  <div className="flex items-center justify-between gap-4 text-sm text-gray-600">
                     <div className="flex items-center gap-1">
                       <Bed className="w-4 h-4" />
                       <span>{property.beds}</span>

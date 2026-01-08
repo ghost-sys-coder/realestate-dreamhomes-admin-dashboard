@@ -1,14 +1,14 @@
 "use client"
 import React, { useState, useEffect } from 'react';
-import { 
-  Home, 
-  BarChart3, 
-  Users, 
-  TrendingUp, 
-  Zap, 
-  CheckCircle2, 
-  ArrowRight, 
-  Menu, 
+import {
+  Home,
+  BarChart3,
+  Users,
+  TrendingUp,
+  Zap,
+  CheckCircle2,
+  ArrowRight,
+  Menu,
   X,
   Star,
   Building2,
@@ -22,8 +22,10 @@ import {
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { useUser } from '@clerk/nextjs';
 
 const LandingPage = () => {
+  const { user } = useUser();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeTestimonial, setActiveTestimonial] = useState(0);
@@ -158,11 +160,10 @@ const LandingPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white max-w-400 mx-auto">
       {/* Navigation */}
-      <nav className={`fixed w-full z-50 transition-all duration-300 ${
-        scrolled ? 'bg-white/90 backdrop-blur-md shadow-md' : 'bg-transparent'
-      }`}>
+      <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'bg-white/90 backdrop-blur-md shadow-md' : 'bg-transparent'
+        }`}>
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -179,14 +180,18 @@ const LandingPage = () => {
               <a href="#features" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">Features</a>
               <a href="#pricing" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">Pricing</a>
               <a href="#testimonials" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">Testimonials</a>
-              <Button variant={"ghost"} className="text-gray-700 hover:text-blue-600 transition-colors font-medium">Sign In</Button>
-              <Button className="px-6 py-2.5 bg-linear-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:shadow-lg hover:scale-105 transition-all font-medium" asChild>
-                <Link href={"/sign-in"}>Get Started</Link>
-              </Button>
+              {user ? (
+                <Button className="px-6 py-2.5 bg-linear-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:shadow-lg hover:scale-105 transition-all font-medium" asChild>
+                  <Link href={"/dashboard"}>Get Started</Link>
+                </Button>
+              ) : (
+                <Button variant={"ghost"} className="text-gray-700 hover:text-blue-600 transition-colors font-medium">Sign In</Button>
+              )}
+
             </div>
 
             {/* Mobile Menu Button */}
-            <button 
+            <button
               className="md:hidden"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
@@ -220,18 +225,18 @@ const LandingPage = () => {
                 <Zap className="w-4 h-4 text-yellow-500" />
                 <span className="text-sm font-medium text-gray-700">Trusted by 12,000+ real estate professionals</span>
               </div>
-              
+
               <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
                 Manage Your Real Estate Empire{' '}
                 <span className="bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                   Effortlessly
                 </span>
               </h1>
-              
+
               <p className="text-xl text-gray-600 mb-8 leading-relaxed">
                 The all-in-one platform for real estate professionals. Track properties, manage clients, analyze performance, and close more deals with powerful AI-driven insights.
               </p>
-              
+
               <div className="flex flex-col sm:flex-row gap-4 mb-8">
                 <button className="px-8 py-4 bg-linear-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:shadow-xl hover:scale-105 transition-all font-semibold text-lg flex items-center justify-center gap-2">
                   Start Free Trial
@@ -241,7 +246,7 @@ const LandingPage = () => {
                   Watch Demo
                 </button>
               </div>
-              
+
               <div className="flex items-center gap-6 text-sm text-gray-600">
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-5 h-5 text-green-500" />
@@ -257,13 +262,13 @@ const LandingPage = () => {
             <div className="relative">
               <div className="absolute inset-0 bg-linear-to-br from-blue-400 to-purple-600 rounded-3xl blur-3xl opacity-20"></div>
               <div className="relative bg-white rounded-3xl shadow-2xl p-8 border border-gray-100">
-                <Image 
-                  src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop" 
+                <Image
+                  src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop"
                   alt="Dashboard Preview"
                   className="rounded-2xl shadow-lg"
                   width={100} height={100}
                 />
-                
+
                 {/* Floating Stats */}
                 <div className="absolute -bottom-6 -left-6 bg-white rounded-2xl shadow-xl p-4 border border-gray-100">
                   <div className="flex items-center gap-3">
@@ -333,7 +338,7 @@ const LandingPage = () => {
             {features.map((feature, index) => {
               const Icon = feature.icon;
               return (
-                <div 
+                <div
                   key={index}
                   className="group bg-white rounded-2xl p-8 shadow-sm hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-transparent hover:-translate-y-2"
                 >
@@ -370,9 +375,8 @@ const LandingPage = () => {
               {testimonials.map((testimonial, index) => (
                 <div
                   key={index}
-                  className={`transition-opacity duration-500 ${
-                    index === activeTestimonial ? 'block' : 'hidden'
-                  }`}
+                  className={`transition-opacity duration-500 ${index === activeTestimonial ? 'block' : 'hidden'
+                    }`}
                 >
                   <div className="flex items-center gap-2 mb-6">
                     {[...Array(testimonial.rating)].map((_, i) => (
@@ -383,8 +387,8 @@ const LandingPage = () => {
                     {testimonial.content}
                   </p>
                   <div className="flex items-center gap-4">
-                    <Image 
-                      src={testimonial.image} 
+                    <Image
+                      src={testimonial.image}
                       alt={testimonial.name}
                       className="w-16 h-16 rounded-full object-cover border-4 border-white shadow-lg"
                       width={100} height={100}
@@ -396,15 +400,14 @@ const LandingPage = () => {
                   </div>
                 </div>
               ))}
-              
+
               <div className="flex gap-2 justify-center mt-8">
                 {testimonials.map((_, index) => (
                   <Button
                     key={index}
                     onClick={() => setActiveTestimonial(index)}
-                    className={`w-2 h-2 rounded-full transition-all ${
-                      index === activeTestimonial ? 'w-8 bg-blue-600' : 'bg-gray-300'
-                    }`}
+                    className={`w-2 h-2 rounded-full transition-all ${index === activeTestimonial ? 'w-8 bg-blue-600' : 'bg-gray-300'
+                      }`}
                   />
                 ))}
               </div>
@@ -429,9 +432,8 @@ const LandingPage = () => {
             {pricingPlans.map((plan, index) => (
               <div
                 key={index}
-                className={`bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all border-2 ${
-                  plan.popular ? 'border-blue-600 scale-105 relative' : 'border-gray-100'
-                }`}
+                className={`bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all border-2 ${plan.popular ? 'border-blue-600 scale-105 relative' : 'border-gray-100'
+                  }`}
               >
                 {plan.popular && (
                   <div className="absolute -top-4 left-1/2 -translate-x-1/2">
@@ -440,7 +442,7 @@ const LandingPage = () => {
                     </span>
                   </div>
                 )}
-                
+
                 <div className="mb-8">
                   <h3 className="text-2xl font-bold text-gray-900 mb-2">{plan.name}</h3>
                   <p className="text-gray-600 mb-6">{plan.description}</p>
@@ -463,11 +465,10 @@ const LandingPage = () => {
                   ))}
                 </ul>
 
-                <button className={`w-full py-4 rounded-xl font-semibold transition-all ${
-                  plan.popular
+                <button className={`w-full py-4 rounded-xl font-semibold transition-all ${plan.popular
                     ? 'bg-linear-to-r from-blue-600 to-purple-600 text-white hover:shadow-xl hover:scale-105'
                     : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
-                }`}>
+                  }`}>
                   Get Started
                 </button>
               </div>
@@ -514,7 +515,7 @@ const LandingPage = () => {
                 Empowering real estate professionals with cutting-edge technology.
               </p>
             </div>
-            
+
             <div>
               <h4 className="text-white font-semibold mb-4">Product</h4>
               <ul className="space-y-2 text-sm">
@@ -524,7 +525,7 @@ const LandingPage = () => {
                 <li><a href="#" className="hover:text-white transition-colors">Integrations</a></li>
               </ul>
             </div>
-            
+
             <div>
               <h4 className="text-white font-semibold mb-4">Company</h4>
               <ul className="space-y-2 text-sm">
@@ -534,7 +535,7 @@ const LandingPage = () => {
                 <li><a href="#" className="hover:text-white transition-colors">Contact</a></li>
               </ul>
             </div>
-            
+
             <div>
               <h4 className="text-white font-semibold mb-4">Legal</h4>
               <ul className="space-y-2 text-sm">
@@ -545,7 +546,7 @@ const LandingPage = () => {
               </ul>
             </div>
           </div>
-          
+
           <div className="border-t border-gray-800 pt-8 text-center text-sm">
             <p>© 2026 RealtyPro. All rights reserved.</p>
           </div>
