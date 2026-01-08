@@ -1,48 +1,70 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { TrendingUp, TrendingDown, Home, DollarSign, Users, MapPin, Bed, Bath, Square } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
+import axios from 'axios';
 
 
 const Dashboard = () => {
   const [selectedPeriod, setSelectedPeriod] = useState('This Week');
+  const [results, setResults] = useState<Property[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    async function getProperties() {
+      setIsLoading(true);
+      try {
+        const res = await axios.get("/api/properties/create");
+        setResults(res.data.results);
+        console.log(res.data.results);
+      } catch (error) {
+        console.error("Failed to fetch properties", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    getProperties();
+  }, []);
+
+
 
   // Mock data for statistics
   const stats = [
-    { 
-      id: 1, 
-      label: 'Total Properties', 
-      value: '4860', 
-      change: '+3.5%', 
+    {
+      id: 1,
+      label: 'Total Properties',
+      value: '4860',
+      change: '+3.5%',
       trend: 'up',
       icon: Home,
       color: 'bg-blue-50 text-blue-600'
     },
-    { 
-      id: 2, 
-      label: 'Total Revenue', 
-      value: '$2B', 
-      change: '+10%', 
+    {
+      id: 2,
+      label: 'Total Revenue',
+      value: '$2B',
+      change: '+10%',
       trend: 'up',
       icon: DollarSign,
       color: 'bg-emerald-50 text-emerald-600'
     },
-    { 
-      id: 3, 
-      label: 'Active Clients', 
-      value: '1037', 
-      change: '-2%', 
+    {
+      id: 3,
+      label: 'Active Clients',
+      value: '1037',
+      change: '-2%',
       trend: 'down',
       icon: Users,
       color: 'bg-amber-50 text-amber-600'
     },
-    { 
-      id: 4, 
-      label: 'Properties Sold', 
-      value: '895', 
-      change: '+15%', 
+    {
+      id: 4,
+      label: 'Properties Sold',
+      value: '895',
+      change: '+15%',
       trend: 'up',
       icon: MapPin,
       color: 'bg-purple-50 text-purple-600'
@@ -73,53 +95,6 @@ const Dashboard = () => {
     { month: 'Dec', revenue: 90 },
   ];
 
-  // Mock properties data
-  const properties = [
-    {
-      id: 1,
-      image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&h=300&fit=crop',
-      title: 'Sunset House Villa',
-      location: 'Beverly Hills, CA',
-      price: '$2,950,000',
-      beds: 4,
-      baths: 3,
-      sqft: '3,200',
-      status: 'For Sale'
-    },
-    {
-      id: 2,
-      image: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=400&h=300&fit=crop',
-      title: 'Oceanside Retreat',
-      location: 'Miami Beach, FL',
-      price: '$1,845,000',
-      beds: 3,
-      baths: 2,
-      sqft: '2,400',
-      status: 'For Sale'
-    },
-    {
-      id: 3,
-      image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&h=300&fit=crop',
-      title: 'Mountain View Estate',
-      location: 'Aspen, CO',
-      price: '$3,200,000',
-      beds: 5,
-      baths: 4,
-      sqft: '4,100',
-      status: 'Sold'
-    },
-    {
-      id: 4,
-      image: 'https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=400&h=300&fit=crop',
-      title: 'Urban Luxury Condo',
-      location: 'Manhattan, NY',
-      price: '$4,650,000',
-      beds: 3,
-      baths: 3,
-      sqft: '2,800',
-      status: 'For Sale'
-    },
-  ];
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
@@ -140,9 +115,8 @@ const Dashboard = () => {
                   <div className={`p-3 rounded-lg ${stat.color}`}>
                     <Icon className="w-6 h-6" />
                   </div>
-                  <div className={`flex items-center gap-1 text-sm font-medium ${
-                    stat.trend === 'up' ? 'text-emerald-600' : 'text-red-600'
-                  }`}>
+                  <div className={`flex items-center gap-1 text-sm font-medium ${stat.trend === 'up' ? 'text-emerald-600' : 'text-red-600'
+                    }`}>
                     {stat.trend === 'up' ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
                     {stat.change}
                   </div>
@@ -197,7 +171,7 @@ const Dashboard = () => {
           <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 lg:col-span-2">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-lg font-semibold text-gray-900">Revenue Generation</h3>
-              <select 
+              <select
                 title='select'
                 value={selectedPeriod}
                 onChange={(e) => setSelectedPeriod(e.target.value)}
@@ -237,52 +211,81 @@ const Dashboard = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 md:grid-cols-3 gap-6">
-            {properties.map((property) => (
+            {isLoading && (
+              <>
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <div key={i} className="animate-pulse">
+                    {/* Image skeleton */}
+                    <div className="relative rounded-xl overflow-hidden mb-4 bg-gray-200 h-48">
+                      <div className="absolute top-3 right-3">
+                        <div className="h-5 w-16 bg-gray-300 rounded-full" />
+                      </div>
+                    </div>
+
+                    {/* Content skeleton */}
+                    <div>
+                      <div className="flex items-start justify-between mb-2">
+                        <div className="h-4 w-3/4 bg-gray-300 rounded" />
+                        <div className="h-4 w-14 bg-gray-300 rounded" />
+                      </div>
+
+                      <div className="h-3 w-1/2 bg-gray-200 rounded mb-3" />
+
+                      <div className="flex items-center justify-between gap-4">
+                        <div className="h-3 w-12 bg-gray-200 rounded" />
+                        <div className="h-3 w-12 bg-gray-200 rounded" />
+                        <div className="h-3 w-16 bg-gray-200 rounded" />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </>
+            )}
+            {results.map((property) => (
               <div key={property.id} className="group cursor-pointer">
                 <div className="relative rounded-xl overflow-hidden mb-4">
-                  <Image 
-                    src={property.image} 
+                  <Image
+                    src={property.images[0]}
                     alt={property.title}
                     className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                     width={100}
                     height={100}
                   />
                   <div className="absolute top-3 right-3">
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                      property.status === 'Sold' 
-                        ? 'bg-emerald-500 text-white' 
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${property.status === "active"
+                        ? 'bg-emerald-500 text-white'
                         : 'bg-blue-500 text-white'
-                    }`}>
+                      }`}>
                       {property.status}
                     </span>
                   </div>
                 </div>
-                
+
                 <div>
                   <div className="flex items-start justify-between mb-2">
                     <h4 className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors text-sm">
                       {property.title}
                     </h4>
-                    <span className="text-lg font-bold text-blue-600">{property.price}</span>
+                    <span className="text-sm font-bold text-blue-600">${property.salePrice}</span>
                   </div>
-                  
+
                   <p className="text-sm text-gray-600 mb-3 flex items-center gap-1">
                     <MapPin className="w-3.5 h-3.5" />
-                    {property.location}
+                    {property.region}
                   </p>
-                  
+
                   <div className="flex items-center justify-between gap-4 text-sm text-gray-600">
                     <div className="flex items-center gap-1">
                       <Bed className="w-4 h-4" />
-                      <span>{property.beds}</span>
+                      <span>{property.amenities.bedrooms}</span>
                     </div>
                     <div className="flex items-center gap-1">
                       <Bath className="w-4 h-4" />
-                      <span>{property.baths}</span>
+                      <span>{property.amenities.bathrooms}</span>
                     </div>
                     <div className="flex items-center gap-1">
                       <Square className="w-4 h-4" />
-                      <span>{property.sqft} sqft</span>
+                      <span>{property.amenities.area} sqft</span>
                     </div>
                   </div>
                 </div>

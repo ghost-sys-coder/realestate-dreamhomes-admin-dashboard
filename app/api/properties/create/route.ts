@@ -8,6 +8,50 @@ import { propertiesTable } from "@/db/schema";
 import { auth } from "@clerk/nextjs/server";
 
 
+export async function GET() {
+    const { userId } = await auth();
+
+    if (!userId) {
+        return NextResponse.json({
+            success: false,
+            message: "You don't have access to this resource"
+        }, { status: 401})
+    }
+
+    const isAdmin = await checkRole("admin");
+
+    if (!isAdmin) {
+        return NextResponse.json({
+            success: false,
+            message: "User not permitted for this action"
+        }, { status: 401 });
+    }
+
+    try {
+        const results = await db.select().from(propertiesTable);
+
+        if (results.length === 0) {
+            return NextResponse.json({
+                success: false,
+                message: "No properties found!"
+            }, { status: 404 });
+        }
+
+        return NextResponse.json({
+            success: true,
+            message: `${results.length} properties found!`,
+            results
+        }, { status: 200})
+    } catch (error) {
+        console.error("Failed to fetch properties", error);
+        return NextResponse.json({
+            success: false,
+            message: "Failed to fetch properties"
+        }, {status: 500})
+    }
+}
+
+
 export async function POST(request: NextRequest) {
     const { userId } = await auth();
 
