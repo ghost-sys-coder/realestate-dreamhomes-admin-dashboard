@@ -4,11 +4,14 @@ import AgentProfile from '../_components/AgentProfile'
 import AgentDocuments from '../_components/AgentDocuments'
 import AgentVerification from '../_components/AgentVerification'
 import { getSingleAgent } from '@/actions/agents'
+import AgentPerformance, { mockAgentPerformance } from '../_components/AgentPerformance'
 
 interface AgentDetailsPageProps {
     params: Promise<{ agentId: string[] }>;
     searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }
+
+const performance = mockAgentPerformance;
 
 const AgentDetailsPage = async ({ params }: AgentDetailsPageProps) => {
     const { agentId } = await params;
@@ -23,6 +26,7 @@ const AgentDetailsPage = async ({ params }: AgentDetailsPageProps) => {
                     <TabsTrigger value='profile'>Profile</TabsTrigger>
                     <TabsTrigger value='documents'>Document</TabsTrigger>
                     <TabsTrigger value='verification'>Verification</TabsTrigger>
+                    <TabsTrigger value='performance'>Agent Performance</TabsTrigger>
                 </TabsList>
                 <TabsContent value='profile'>
                     <AgentProfile agent={agent} />
@@ -32,6 +36,12 @@ const AgentDetailsPage = async ({ params }: AgentDetailsPageProps) => {
                 </TabsContent>
                 <TabsContent value='verification'>
                     <AgentVerification status={agent?.status || "draft"} agentId={Number(agentId)} />
+                </TabsContent>
+                <TabsContent value='performance'>
+                    <AgentPerformance
+                        agentName={agent.firstName}
+                        metrics={performance}
+                    />
                 </TabsContent>
             </Tabs>
         </div>

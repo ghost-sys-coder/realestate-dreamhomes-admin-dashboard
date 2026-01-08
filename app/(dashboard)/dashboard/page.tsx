@@ -237,8 +237,7 @@ const Dashboard = () => {
                         <div className="h-3 w-16 bg-gray-200 rounded" />
                       </div>
                     </div>
-                  </div>
-                ))}
+                  </div>                  ))}
               </>
             )}
             {results.map((property) => (
